@@ -9,15 +9,25 @@ from database.models import Category, Event, UserPreferences
 KEYWORDS = {
     Category.AI_ML: ("ai", "machine learning", "data science", "llm"),
     Category.SOFTWARE: ("software", "developer", "programming", "devops", "cloud"),
-    Category.CYBERSECURITY: ("cyber", "security", "infosec"),
+    Category.CYBERSECURITY: ("cybersecurity", "cyber security", "information security", "infosec", "cloud security"),
     Category.STARTUPS: ("startup", "founder", "entrepreneur"),
     Category.BUSINESS: ("business", "networking", "entrepreneurship"),
     Category.VENTURE_CAPITAL: ("venture capital", "investment", "fundraising", "vc"),
     Category.PRODUCT: ("product management", "product manager"),
-    Category.MARKETING: ("marketing", "sales", "growth"),
+    Category.MARKETING: ("marketing", "growth", "sales strategy", "business development"),
     Category.HACKATHONS: ("hackathon", "hack day", "hack night", "coding challenge"),
     Category.FOOD: ("food", "lunch", "dinner", "breakfast", "brunch", "snacks", "pizza", "catering", "refreshments"),
 }
+
+EXCLUDED_TERMS = (
+    "rave", "nightclub", "nightlife", "concert", "theatre performance", "family brunch",
+    "boat show", "camping caravan", "equestrian", "fishing show", "motorbike fair",
+)
+
+
+def is_professionally_relevant(event: Event) -> bool:
+    text = f"{event.title} {event.description}".casefold()
+    return bool(event.categories) and not any(term in text for term in EXCLUDED_TERMS)
 
 
 def classify(event: Event) -> Event:

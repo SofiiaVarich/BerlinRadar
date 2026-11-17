@@ -47,7 +47,7 @@ class MesseBerlinCollector(BaseCollector):
         link = heading.find_parent("a", href=True) or item.find("a", href=True)
         url = str(link["href"]) if link else self.calendar_url
         prefix = item.get_text(" ", strip=True).split(title, 1)[0]
-        location = prefix.replace(date_text, "", 1).strip()
+        location = prefix.replace(date_text, "", 1).split(" Categories", 1)[0].strip()
         if "berlin" not in location.casefold():
             return None
         full_text = item.get_text(" ", strip=True)

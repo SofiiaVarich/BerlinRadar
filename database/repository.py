@@ -106,6 +106,27 @@ class Repository:
                               (start.isoformat(), end.isoformat(), limit)).fetchall()
         return [self._event(row) for row in rows]
 
+    async def prune_source(self, source: str, external_ids: set[str]) -> None:
+        await asyncio.to_thread(self._prune_source, source, external_ids)
+
+    def _prune_source(self, source: str, external_ids: set[str]) -> None:
+        with self._connect() as db:
+            if external_ids:
+                placeholders = ",".join("?" for _ in external_ids)
+                db.execute(
+                    f"DELETE FROM events WHERE source = ? AND external_id NOT IN ({placeholders})",
+                    (source, *sorted(external_ids)),
+                )
+            else:
+                db.execute("DELETE FROM events WHERE source = ?", (source,))
+
+    async def delete_expired(self, before: datetime) -> None:
+        await asyncio.to_thread(self._delete_expired, before)
+
+    def _delete_expired(self, before: datetime) -> None:
+        with self._connect() as db:
+            db.execute("DELETE FROM events WHERE starts_at < ?", (before.astimezone(timezone.utc).isoformat(),))
+
     async def ensure_user(self, telegram_id: int) -> None:
         await asyncio.to_thread(self._ensure_user, telegram_id)
 

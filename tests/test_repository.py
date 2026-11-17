@@ -45,3 +45,18 @@ async def test_existing_source_event_is_updated(tmp_path):
     assert len(stored) == 1
     assert stored[0].title == "Python Meetup Updated"
     assert stored[0].location == "Berlin Kreuzberg"
+
+
+@pytest.mark.asyncio
+async def test_prunes_missing_source_events_and_expired_events(tmp_path):
+    repository = Repository(tmp_path / "events.db")
+    await repository.initialize()
+    now = datetime.now(timezone.utc)
+    current = Event("Current", now + timedelta(days=1), "Berlin", "https://example.com/1", "feed", external_id="1")
+    stale = Event("Stale", now + timedelta(days=2), "Berlin", "https://example.com/2", "feed", external_id="2")
+    expired = Event("Expired", now - timedelta(days=1), "Berlin", "https://example.com/3", "feed", external_id="3")
+    await repository.upsert_events([current, stale, expired])
+    await repository.prune_source("feed", {"1", "3"})
+    await repository.delete_expired(now)
+    stored = await repository.list_events(now - timedelta(days=2), now + timedelta(days=3))
+    assert [event.external_id for event in stored] == ["1"]

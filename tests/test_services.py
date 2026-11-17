@@ -4,7 +4,7 @@ import pytest
 
 from database.models import Event, UserPreferences
 from services.deduplication import deduplicate
-from services.filtering import classify, filter_events
+from services.filtering import classify, filter_events, is_professionally_relevant
 
 
 def event(title="Berlin AI Meetup", hours=1, location="Berlin Mitte", price=0):
@@ -52,6 +52,15 @@ def test_hackathon_is_classified():
     hackathon = Event("Berlin AI Hackathon", datetime.now(timezone.utc) + timedelta(days=1),
                       "Berlin", "https://example.com", "test")
     assert "Hackathons" in classify(hackathon).categories
+
+
+def test_entertainment_and_broad_security_terms_are_not_relevant():
+    rave = Event("Family Brunch Rave", datetime.now(timezone.utc) + timedelta(days=1),
+                 "Berlin", "https://example.com", "test")
+    security = Event("Future food security", datetime.now(timezone.utc) + timedelta(days=1),
+                     "Berlin", "https://example.com", "test")
+    assert not is_professionally_relevant(classify(rave))
+    assert "Cybersecurity" not in classify(security).categories
 
 
 def test_ai_keyword_does_not_match_inside_word():

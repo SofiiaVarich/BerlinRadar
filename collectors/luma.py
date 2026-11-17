@@ -54,7 +54,11 @@ class LumaCollector(BaseCollector):
             return "Unknown location"
         address = value.get("address") or {}
         locality = address.get("addressLocality", "") if isinstance(address, dict) else ""
-        return ", ".join(dict.fromkeys(filter(None, (value.get("name", ""), locality)))) or "Unknown location"
+        name = value.get("name", "")
+        parts = [name]
+        if locality and locality.casefold() not in name.casefold():
+            parts.append(locality)
+        return ", ".join(filter(None, parts)) or "Unknown location"
 
     @staticmethod
     def _price(value: Any) -> float | None:
