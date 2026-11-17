@@ -42,6 +42,12 @@ def test_event_rejects_naive_timestamp():
         Event("Tech", datetime.now(), "Berlin", "https://example.com", "test")
 
 
+def test_food_is_classified_only_when_explicitly_mentioned():
+    event_with_food = Event("Founder breakfast", datetime.now(timezone.utc) + timedelta(days=1),
+                            "Berlin", "https://example.com", "test")
+    assert "Food" in classify(event_with_food).categories
+
+
 def test_hackathon_is_classified():
     hackathon = Event("Berlin AI Hackathon", datetime.now(timezone.utc) + timedelta(days=1),
                       "Berlin", "https://example.com", "test")

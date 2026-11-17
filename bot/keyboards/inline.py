@@ -16,6 +16,7 @@ FREE_BUTTON = "💚 Free events"
 PAID_BUTTON = "💳 Paid events"
 HACKATHONS_BUTTON = "💻 Hackathons"
 OFFLINE_BUTTON = "🏢 Offline events"
+FOOD_BUTTON = "🍽 Food events"
 SEARCH_BUTTON = "🔍 Search"
 SETTINGS_BUTTON = "⚙️ Settings"
 SUBSCRIBE_BUTTON = "🔔 Notifications"
@@ -28,8 +29,8 @@ def main_menu() -> ReplyKeyboardMarkup:
             [KeyboardButton(text=WEEK_BUTTON), KeyboardButton(text=WEEKEND_BUTTON)],
             [KeyboardButton(text=FREE_BUTTON), KeyboardButton(text=PAID_BUTTON)],
             [KeyboardButton(text=HACKATHONS_BUTTON), KeyboardButton(text=OFFLINE_BUTTON)],
-            [KeyboardButton(text=SEARCH_BUTTON), KeyboardButton(text=SETTINGS_BUTTON)],
-            [KeyboardButton(text=SUBSCRIBE_BUTTON)],
+            [KeyboardButton(text=FOOD_BUTTON), KeyboardButton(text=SEARCH_BUTTON)],
+            [KeyboardButton(text=SETTINGS_BUTTON), KeyboardButton(text=SUBSCRIBE_BUTTON)],
         ],
         resize_keyboard=True,
         input_field_placeholder="Choose an action or type a command",

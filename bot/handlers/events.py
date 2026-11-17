@@ -11,6 +11,7 @@ from aiogram.types import Message
 
 from bot.keyboards.inline import (
     EVENTS_BUTTON,
+    FOOD_BUTTON,
     FREE_BUTTON,
     HACKATHONS_BUTTON,
     OFFLINE_BUTTON,
@@ -114,6 +115,17 @@ async def offline_command(message: Message, event_service: EventService, reposit
     events = await event_service.upcoming(preferences=_without_filters(preferences), limit=50)
     offline = [event for event in events if event.location.casefold() != "unknown location"]
     await send_events(message, offline, preferences.timezone)
+
+
+@router.message(Command("food"))
+@router.message(F.text == FOOD_BUTTON)
+async def food_command(message: Message, event_service: EventService, repository: Repository) -> None:
+    user_id = message.from_user.id if message.from_user else message.chat.id
+    preferences = await repository.get_preferences(user_id)
+    events = await event_service.upcoming(
+        preferences=_without_filters(preferences), keyword="Food", limit=50
+    )
+    await send_events(message, events, preferences.timezone)
 
 
 @router.message(Command("week"))

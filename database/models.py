@@ -18,6 +18,7 @@ class Category(StrEnum):
     PRODUCT = "Product Management"
     MARKETING = "Marketing & Sales"
     HACKATHONS = "Hackathons"
+    FOOD = "Food"
 
 
 @dataclass(slots=True)

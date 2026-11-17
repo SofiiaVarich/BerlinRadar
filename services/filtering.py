@@ -16,6 +16,7 @@ KEYWORDS = {
     Category.PRODUCT: ("product management", "product manager"),
     Category.MARKETING: ("marketing", "sales", "growth"),
     Category.HACKATHONS: ("hackathon", "hack day", "hack night", "coding challenge"),
+    Category.FOOD: ("food", "lunch", "dinner", "breakfast", "brunch", "snacks", "pizza", "catering", "refreshments"),
 }
 
 

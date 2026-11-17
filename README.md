@@ -31,6 +31,7 @@ BerlinRadar only stores events located in the configured city and matching at le
 | `/paid` | Show events with an explicit ticket price above zero |
 | `/hackathons` | Show upcoming hackathons and coding challenges |
 | `/offline` | Show events with a known physical Berlin location |
+| `/food` | Show events whose listing explicitly mentions food or refreshments |
 | `/search AI` | Search by title, description, or category |
 | `/settings` | Select categories and the free-only preference |
 | `/subscribe` | Enable or disable daily recommendations |
@@ -49,6 +50,7 @@ The persistent Telegram keyboard provides buttons for the main search and settin
 - Product Management
 - Marketing & Sales
 - Hackathons
+- Food
 
 Classification uses deterministic keyword and phrase matching. AI-based classification is not currently implemented.
 

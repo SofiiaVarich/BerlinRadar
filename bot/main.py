@@ -65,6 +65,7 @@ async def main() -> None:
                 BotCommand(command="paid", description="Events with paid tickets"),
                 BotCommand(command="hackathons", description="Upcoming hackathons"),
                 BotCommand(command="offline", description="In-person events"),
+                BotCommand(command="food", description="Events mentioning food"),
                 BotCommand(command="search", description="Search by keyword"),
                 BotCommand(command="settings", description="Event preferences"),
                 BotCommand(command="subscribe", description="Toggle notifications"),
