@@ -7,7 +7,7 @@ from typing import Any, Iterable
 
 from bs4 import BeautifulSoup
 
-from collectors.base import BaseCollector, CollectorError
+from collectors.base import BaseCollector
 from database.models import Event
 
 logger = logging.getLogger(__name__)

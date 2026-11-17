@@ -23,7 +23,7 @@ def classify(event: Event) -> Event:
     inferred = [
         str(category)
         for category, words in KEYWORDS.items()
-        if any(re.search(rf"(?<!\\w){re.escape(word)}(?!\\w)", text) for word in words)
+        if any(re.search(rf"(?<!\w){re.escape(word)}(?!\w)", text) for word in words)
     ]
     event.categories = list(dict.fromkeys(event.categories + inferred))
     return event
