@@ -29,10 +29,11 @@ class Settings:
     database_url: str = os.getenv("DATABASE_URL", "sqlite:///events.db")
     default_city: str = os.getenv("DEFAULT_CITY", "Berlin")
     timezone: str = os.getenv("TIMEZONE", "Europe/Berlin")
-    event_update_interval_hours: int = _int("EVENT_UPDATE_INTERVAL_HOURS", 6)
+    event_update_interval_hours: int = _int("EVENT_UPDATE_INTERVAL_HOURS", 2)
     notification_hour: int = _int("NOTIFICATION_HOUR", 9)
     enable_berlin_de: bool = _bool("ENABLE_BERLIN_DE", True)
     enable_luma: bool = _bool("ENABLE_LUMA", True)
+    enable_messe_berlin: bool = _bool("ENABLE_MESSE_BERLIN", True)
     eventbrite_token: str = os.getenv("EVENTBRITE_TOKEN", "")
     meetup_access_token: str = os.getenv("MEETUP_ACCESS_TOKEN", "")
     event_feed_urls: tuple[str, ...] = tuple(

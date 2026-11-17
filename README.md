@@ -59,12 +59,13 @@ Sources are opt-in and must comply with each platform's terms of service.
 | Source | Current behavior | Configuration |
 |---|---|---|
 | Luma Berlin | Parses the public Berlin calendar's Schema.org event list without a token | Enabled by default; `ENABLE_LUMA` |
+| Messe Berlin | Parses Berlin-located events from the public Messe event calendar | Enabled by default; `ENABLE_MESSE_BERLIN` |
 | Berlin.de trade fairs | Token-free, robots-compliant collection from the public trade-fair calendar, including many Messe listings | Enabled by default; `ENABLE_BERLIN_DE` |
 | Structured event pages | Parses Schema.org `Event` JSON-LD from explicitly permitted URLs | `EVENT_FEED_URLS` |
 | Eventbrite | Imports live events owned by organizations associated with the authenticated account | `EVENTBRITE_TOKEN` |
 | Meetup | Imports events available through the authenticated user's GraphQL `self.events` response | `MEETUP_ACCESS_TOKEN` |
 
-Meetup.com disallows automated access to search parameters, feeds, GraphQL, and API paths in `robots.txt`, so BerlinRadar does not scrape Meetup search results. The authenticated Meetup adapter only imports events available to that account. Eventbrite likewise does not provide general Berlin-wide public discovery. Luma and Berlin.de are enabled by default and provides public trade fairs; category filtering keeps only listings relevant to the bot's professional focus. LinkedIn and arbitrary website scraping are not implemented because access restrictions and terms must be respected.
+Meetup.com disallows automated access to search parameters, feeds, GraphQL, and API paths in `robots.txt`, so BerlinRadar does not scrape Meetup search results. The authenticated Meetup adapter only imports events available to that account. Eventbrite likewise does not provide general Berlin-wide public discovery. Luma, Messe Berlin, and Berlin.de are enabled by default and provides public trade fairs; category filtering keeps only listings relevant to the bot's professional focus. LinkedIn and arbitrary website scraping are not implemented because access restrictions and terms must be respected.
 
 ## Architecture
 
@@ -159,10 +160,11 @@ TELEGRAM_BOT_TOKEN=your_botfather_token
 DATABASE_URL=sqlite:///events.db
 DEFAULT_CITY=Berlin
 TIMEZONE=Europe/Berlin
-EVENT_UPDATE_INTERVAL_HOURS=6
+EVENT_UPDATE_INTERVAL_HOURS=2
 NOTIFICATION_HOUR=9
 ENABLE_BERLIN_DE=true
 ENABLE_LUMA=true
+ENABLE_MESSE_BERLIN=true
 
 # Optional source configuration
 EVENTBRITE_TOKEN=
@@ -196,7 +198,7 @@ Docker Compose loads `.env` and stores SQLite data in the persistent `berlin-rad
 
 ## Processing workflow
 
-1. APScheduler triggers collection at the configured interval. Berlin.de requests identify BerlinRadar and are rate-limited between detail pages.
+1. APScheduler triggers collection every two hours by default. Overlapping runs are prevented and delayed runs are coalesced. Berlin.de requests identify BerlinRadar and are rate-limited between detail pages.
 2. Enabled collectors retrieve event data.
 3. Events are normalized to the shared model and UTC timestamps.
 4. Keyword classification assigns supported professional categories.

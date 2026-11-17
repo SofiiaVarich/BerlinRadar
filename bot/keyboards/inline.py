@@ -1,4 +1,7 @@
 """Inline keyboards used by event and settings messages."""
+from datetime import timedelta
+from urllib.parse import urlencode
+
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
@@ -34,9 +37,19 @@ def main_menu() -> ReplyKeyboardMarkup:
 
 
 def event_keyboard(event: Event) -> InlineKeyboardMarkup:
-    return InlineKeyboardMarkup(inline_keyboard=[[
-        InlineKeyboardButton(text="🔗 Register", url=event.url)
-    ]])
+    starts_at = event.starts_at.strftime("%Y%m%dT%H%M%SZ")
+    ends_at = (event.starts_at + timedelta(hours=2)).strftime("%Y%m%dT%H%M%SZ")
+    calendar_url = "https://calendar.google.com/calendar/render?" + urlencode({
+        "action": "TEMPLATE",
+        "text": event.title,
+        "dates": f"{starts_at}/{ends_at}",
+        "details": f"{event.description}\n\nRegistration: {event.url}".strip(),
+        "location": event.location,
+    })
+    return InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="🔗 Register", url=event.url)],
+        [InlineKeyboardButton(text="📅 Add to Google Calendar", url=calendar_url)],
+    ])
 
 
 def settings_keyboard(preferences: UserPreferences) -> InlineKeyboardMarkup:

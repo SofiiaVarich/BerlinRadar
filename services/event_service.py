@@ -26,12 +26,17 @@ class EventService:
         gathered: list[Event] = []
         for collector in self.collectors:
             try:
-                gathered.extend(await collector.collect())
+                collected = await collector.collect()
+                gathered.extend(collected)
+                logger.info("Collector %s returned %d events", collector.name, len(collected))
             except Exception:
                 logger.exception("Collector %s failed", collector.name)
         normalized = [classify(event) for event in gathered if self.city.casefold() in event.location.casefold()]
         relevant = [event for event in normalized if event.categories]
-        return await self.repository.upsert_events(deduplicate(relevant))
+        unique = deduplicate(relevant)
+        changed = await self.repository.upsert_events(unique)
+        logger.info("Collection stored %d relevant events (%d database changes)", len(unique), changed)
+        return changed
 
     async def upcoming(self, days: int = 30, preferences: UserPreferences | None = None,
                        keyword: str | None = None, limit: int = 20) -> list[Event]:

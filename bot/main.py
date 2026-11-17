@@ -14,6 +14,7 @@ from bot.handlers import router
 from collectors.berlin_de import BerlinDeCollector
 from collectors.eventbrite import EventbriteCollector
 from collectors.luma import LumaCollector
+from collectors.messe_berlin import MesseBerlinCollector
 from collectors.meetup import MeetupCollector
 from collectors.websites import WebsiteCollector
 from config import settings
@@ -42,6 +43,7 @@ async def main() -> None:
         collectors = [
             *([BerlinDeCollector(client, settings.timezone)] if settings.enable_berlin_de else []),
             *([LumaCollector(client)] if settings.enable_luma else []),
+            *([MesseBerlinCollector(client, settings.timezone)] if settings.enable_messe_berlin else []),
             EventbriteCollector(client, settings.eventbrite_token),
             MeetupCollector(client, settings.meetup_access_token),
             WebsiteCollector(client, settings.event_feed_urls),

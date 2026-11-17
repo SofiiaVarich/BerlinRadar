@@ -65,7 +65,8 @@ async def today_command(message: Message, event_service: EventService, repositor
     preferences = await repository.get_preferences(user_id)
     now = datetime.now(ZoneInfo(preferences.timezone))
     end = (now + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
-    await send_events(message, await event_service.between(now, end, preferences), preferences.timezone)
+    events = await event_service.between(now, end, preferences)
+    await send_events(message, list(reversed(events)), preferences.timezone)
 
 
 @router.message(Command("free"))
