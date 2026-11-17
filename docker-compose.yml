@@ -1,0 +1,12 @@
+services:
+  bot:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_URL: sqlite:////data/events.db
+    volumes:
+      - berlin-radar-data:/data
+
+volumes:
+  berlin-radar-data:
