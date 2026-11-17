@@ -8,12 +8,18 @@ from database.models import Category, Event, UserPreferences
 
 KEYWORDS = {
     Category.AI_ML: ("ai", "machine learning", "data science", "llm"),
-    Category.SOFTWARE: ("software", "developer", "programming", "devops", "cloud"),
+    Category.SOFTWARE: (
+        "software", "developer", "development", "programming", "engineer", "engineering",
+        "devops", "cloud", "agents in production", "api", "open source",
+    ),
     Category.CYBERSECURITY: ("cybersecurity", "cyber security", "information security", "infosec", "cloud security"),
     Category.STARTUPS: ("startup", "founder", "entrepreneur"),
     Category.BUSINESS: ("business", "networking", "entrepreneurship"),
     Category.VENTURE_CAPITAL: ("venture capital", "investment", "fundraising", "vc"),
-    Category.PRODUCT: ("product management", "product manager"),
+    Category.PRODUCT: (
+        "product management", "product manager", "product design", "service design",
+        "design gathering", "ux", "user experience",
+    ),
     Category.MARKETING: ("marketing", "growth", "sales strategy", "business development"),
     Category.HACKATHONS: ("hackathon", "hack day", "hack night", "coding challenge"),
     Category.FOOD: ("food", "lunch", "dinner", "breakfast", "brunch", "snacks", "pizza", "catering", "refreshments"),

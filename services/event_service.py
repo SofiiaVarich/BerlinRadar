@@ -40,7 +40,8 @@ class EventService:
         for source in successful_sources.intersection({"berlin.de", "luma", "messe-berlin"}):
             external_ids = {event.external_id for event in unique if event.source == source and event.external_id}
             await self.repository.prune_source(source, external_ids)
-        await self.repository.delete_expired(datetime.now(self.timezone))
+        local_midnight = datetime.now(self.timezone).replace(hour=0, minute=0, second=0, microsecond=0)
+        await self.repository.delete_expired(local_midnight)
         logger.info("Collection stored %d relevant events (%d database changes)", len(unique), changed)
         return changed
 

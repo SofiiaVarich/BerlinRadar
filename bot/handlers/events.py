@@ -47,8 +47,9 @@ async def send_events(message: Message, events: list[Event], timezone: str = "Eu
     if not events:
         await message.answer(empty_message)
         return
-    await message.answer(f"Found <b>{len(events)}</b> event{'s' if len(events) != 1 else ''}:")
-    for event in events:
+    ordered_events = sorted(events, key=lambda event: event.starts_at, reverse=True)
+    await message.answer(f"Found <b>{len(ordered_events)}</b> event{'s' if len(ordered_events) != 1 else ''}:")
+    for event in ordered_events:
         await message.answer(format_event(event, timezone), reply_markup=event_keyboard(event), disable_web_page_preview=True)
 
 
@@ -66,10 +67,11 @@ async def today_command(message: Message, event_service: EventService, repositor
     user_id = message.from_user.id if message.from_user else message.chat.id
     preferences = await repository.get_preferences(user_id)
     now = datetime.now(ZoneInfo(preferences.timezone))
-    end = (now + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
-    events = await event_service.between(now, end, preferences)
+    start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    end = start + timedelta(days=1)
+    events = await event_service.between(start, end, preferences)
     await send_events(
-        message, list(reversed(events)), preferences.timezone,
+        message, events, preferences.timezone,
         "No matching events remain today. New source data is checked every two hours.",
     )
 

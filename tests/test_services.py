@@ -48,6 +48,16 @@ def test_food_is_classified_only_when_explicitly_mentioned():
     assert "Food" in classify(event_with_food).categories
 
 
+def test_engineering_and_design_events_are_classified():
+    engineering = Event("GTM Engineering Meetup: Agents in Production",
+                        datetime.now(timezone.utc) + timedelta(days=1), "Berlin",
+                        "https://example.com/engineering", "test")
+    design = Event("The Design Gathering", datetime.now(timezone.utc) + timedelta(days=1),
+                   "Berlin", "https://example.com/design", "test")
+    assert "Software Development" in classify(engineering).categories
+    assert "Product Management" in classify(design).categories
+
+
 def test_hackathon_is_classified():
     hackathon = Event("Berlin AI Hackathon", datetime.now(timezone.utc) + timedelta(days=1),
                       "Berlin", "https://example.com", "test")

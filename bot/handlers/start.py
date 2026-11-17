@@ -14,8 +14,8 @@ async def start(message: Message, repository: Repository) -> None:
     if message.from_user:
         await repository.ensure_user(message.from_user.id)
     await message.answer(
-        "🚀 <b>Welcome to BerlinRadar!</b>\n\n"
-        "Discover Berlin tech, startup, and business events.\n\n"
+        "🚀 <b>Welcome! I’m Sam.</b>\n\n"
+        "I help you discover Berlin tech, startup, and business events.\n\n"
         "<b>Commands</b>\n"
         "/events — upcoming events\n/today — events today\n/week — this week\n/weekend — this weekend\n"
         "/free — free events\n/paid — paid events\n/hackathons — hackathons\n"
