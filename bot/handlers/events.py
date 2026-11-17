@@ -42,9 +42,10 @@ def format_event(event: Event, timezone: str = "Europe/Berlin") -> str:
     return body + (f"\n\n📝 {description}" if description else "")
 
 
-async def send_events(message: Message, events: list[Event], timezone: str = "Europe/Berlin") -> None:
+async def send_events(message: Message, events: list[Event], timezone: str = "Europe/Berlin",
+                      empty_message: str = "No matching upcoming events found. Try again later or change your settings.") -> None:
     if not events:
-        await message.answer("No matching upcoming events found. Try again later or change your settings.")
+        await message.answer(empty_message)
         return
     await message.answer(f"Found <b>{len(events)}</b> event{'s' if len(events) != 1 else ''}:")
     for event in events:
@@ -67,7 +68,10 @@ async def today_command(message: Message, event_service: EventService, repositor
     now = datetime.now(ZoneInfo(preferences.timezone))
     end = (now + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
     events = await event_service.between(now, end, preferences)
-    await send_events(message, list(reversed(events)), preferences.timezone)
+    await send_events(
+        message, list(reversed(events)), preferences.timezone,
+        "No matching events remain today. New source data is checked every two hours.",
+    )
 
 
 @router.message(Command("free"))
@@ -92,8 +96,15 @@ def _without_filters(preferences: UserPreferences) -> UserPreferences:
 async def paid_command(message: Message, event_service: EventService, repository: Repository) -> None:
     user_id = message.from_user.id if message.from_user else message.chat.id
     preferences = await repository.get_preferences(user_id)
-    events = await event_service.upcoming(preferences=_without_filters(preferences), limit=50)
-    await send_events(message, [event for event in events if event.price is not None and event.price > 0], preferences.timezone)
+    events = await event_service.upcoming(days=365, preferences=_without_filters(preferences), limit=100)
+    paid = [
+        event for event in events
+        if (event.price is not None and event.price > 0) or "buy tickets" in event.description.casefold()
+    ]
+    await send_events(
+        message, paid, preferences.timezone,
+        "No events with an explicit price or a ‘Buy tickets’ notice are currently available.",
+    )
 
 
 @router.message(Command("hackathons"))
@@ -101,10 +112,12 @@ async def paid_command(message: Message, event_service: EventService, repository
 async def hackathons_command(message: Message, event_service: EventService, repository: Repository) -> None:
     user_id = message.from_user.id if message.from_user else message.chat.id
     preferences = await repository.get_preferences(user_id)
-    events = await event_service.upcoming(
-        preferences=_without_filters(preferences), keyword="hackathon", limit=50
+    events = await event_service.upcoming(days=365, preferences=_without_filters(preferences), limit=100)
+    hackathons = [event for event in events if "Hackathons" in event.categories]
+    await send_events(
+        message, hackathons, preferences.timezone,
+        "No announced Berlin hackathons were found in the next year. The list refreshes every two hours.",
     )
-    await send_events(message, events, preferences.timezone)
 
 
 @router.message(Command("offline"))
@@ -112,7 +125,7 @@ async def hackathons_command(message: Message, event_service: EventService, repo
 async def offline_command(message: Message, event_service: EventService, repository: Repository) -> None:
     user_id = message.from_user.id if message.from_user else message.chat.id
     preferences = await repository.get_preferences(user_id)
-    events = await event_service.upcoming(preferences=_without_filters(preferences), limit=50)
+    events = await event_service.upcoming(days=90, preferences=_without_filters(preferences), limit=100)
     offline = [event for event in events if event.location.casefold() != "unknown location"]
     await send_events(message, offline, preferences.timezone)
 
@@ -122,10 +135,12 @@ async def offline_command(message: Message, event_service: EventService, reposit
 async def food_command(message: Message, event_service: EventService, repository: Repository) -> None:
     user_id = message.from_user.id if message.from_user else message.chat.id
     preferences = await repository.get_preferences(user_id)
-    events = await event_service.upcoming(
-        preferences=_without_filters(preferences), keyword="Food", limit=50
+    events = await event_service.upcoming(days=365, preferences=_without_filters(preferences), limit=100)
+    food_events = [event for event in events if "Food" in event.categories]
+    await send_events(
+        message, food_events, preferences.timezone,
+        "No professional events explicitly mentioning food or refreshments were found in the next year.",
     )
-    await send_events(message, events, preferences.timezone)
 
 
 @router.message(Command("week"))
@@ -149,4 +164,7 @@ async def weekend_command(message: Message, event_service: EventService, reposit
     if now.weekday() >= 5:
         start = now
     end = (start + timedelta(days=2 if start.weekday() == 5 else 1)).replace(hour=0, minute=0, second=0, microsecond=0)
-    await send_events(message, await event_service.between(start, end, preferences), preferences.timezone)
+    await send_events(
+        message, await event_service.between(start, end, preferences), preferences.timezone,
+        "No matching events are currently announced for this weekend. The list refreshes every two hours.",
+    )

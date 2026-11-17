@@ -49,8 +49,11 @@ def filter_events(events: list[Event], start: datetime | None = None, end: datet
     if end:
         result = [event for event in result if event.starts_at < end]
     if keyword:
-        term = keyword.casefold()
-        result = [event for event in result if term in f"{event.title} {event.description} {' '.join(event.categories)}".casefold()]
+        terms = re.findall(r"[\w&+.-]+", keyword.casefold())
+        result = [
+            event for event in result
+            if all(term in f"{event.title} {event.description} {' '.join(event.categories)}".casefold() for term in terms)
+        ]
     if preferences:
         if preferences.free_only:
             result = [event for event in result if event.price == 0]
