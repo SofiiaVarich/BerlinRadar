@@ -11,6 +11,11 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
+def _bool(name: str, default: bool) -> bool:
+    value = os.getenv(name)
+    return default if value is None else value.casefold() in {"1", "true", "yes", "on"}
+
+
 def _int(name: str, default: int) -> int:
     try:
         return int(os.getenv(name, str(default)))
@@ -26,6 +31,8 @@ class Settings:
     timezone: str = os.getenv("TIMEZONE", "Europe/Berlin")
     event_update_interval_hours: int = _int("EVENT_UPDATE_INTERVAL_HOURS", 6)
     notification_hour: int = _int("NOTIFICATION_HOUR", 9)
+    enable_berlin_de: bool = _bool("ENABLE_BERLIN_DE", True)
+    enable_luma: bool = _bool("ENABLE_LUMA", True)
     eventbrite_token: str = os.getenv("EVENTBRITE_TOKEN", "")
     meetup_access_token: str = os.getenv("MEETUP_ACCESS_TOKEN", "")
     event_feed_urls: tuple[str, ...] = tuple(

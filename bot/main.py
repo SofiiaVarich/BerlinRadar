@@ -11,7 +11,9 @@ from aiogram.types import BotCommand
 import httpx
 
 from bot.handlers import router
+from collectors.berlin_de import BerlinDeCollector
 from collectors.eventbrite import EventbriteCollector
+from collectors.luma import LumaCollector
 from collectors.meetup import MeetupCollector
 from collectors.websites import WebsiteCollector
 from config import settings
@@ -33,8 +35,13 @@ async def main() -> None:
     dispatcher.include_router(router())
     dispatcher["repository"] = repository
 
-    async with httpx.AsyncClient(timeout=20, headers={"User-Agent": "BerlinRadar/1.0"}) as client:
+    async with httpx.AsyncClient(
+        timeout=20,
+        headers={"User-Agent": "BerlinRadar/1.0 (+https://github.com/SofiiaVarich/BerlinRadar)"},
+    ) as client:
         collectors = [
+            *([BerlinDeCollector(client, settings.timezone)] if settings.enable_berlin_de else []),
+            *([LumaCollector(client)] if settings.enable_luma else []),
             EventbriteCollector(client, settings.eventbrite_token),
             MeetupCollector(client, settings.meetup_access_token),
             WebsiteCollector(client, settings.event_feed_urls),
@@ -49,9 +56,13 @@ async def main() -> None:
             await bot.set_my_commands([
                 BotCommand(command="start", description="Start BerlinRadar"),
                 BotCommand(command="events", description="Upcoming events"),
+                BotCommand(command="today", description="Events happening today"),
                 BotCommand(command="week", description="Events this week"),
                 BotCommand(command="weekend", description="Events this weekend"),
                 BotCommand(command="free", description="Free events"),
+                BotCommand(command="paid", description="Events with paid tickets"),
+                BotCommand(command="hackathons", description="Upcoming hackathons"),
+                BotCommand(command="offline", description="In-person events"),
                 BotCommand(command="search", description="Search by keyword"),
                 BotCommand(command="settings", description="Event preferences"),
                 BotCommand(command="subscribe", description="Toggle notifications"),

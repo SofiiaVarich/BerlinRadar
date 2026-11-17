@@ -17,6 +17,7 @@ class Category(StrEnum):
     VENTURE_CAPITAL = "Venture Capital"
     PRODUCT = "Product Management"
     MARKETING = "Marketing & Sales"
+    HACKATHONS = "Hackathons"
 
 
 @dataclass(slots=True)

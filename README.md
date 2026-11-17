@@ -24,9 +24,13 @@ BerlinRadar only stores events located in the configured city and matching at le
 | `/start` | Open the bot and display the main menu |
 | `/help` | Display usage instructions |
 | `/events` | Show upcoming matching events |
+| `/today` | Show events starting later today |
 | `/week` | Show events through the end of this week |
 | `/weekend` | Show events during the upcoming/current weekend |
-| `/free` | Show free events |
+| `/free` | Show events explicitly listed as free |
+| `/paid` | Show events with an explicit ticket price above zero |
+| `/hackathons` | Show upcoming hackathons and coding challenges |
+| `/offline` | Show events with a known physical Berlin location |
 | `/search AI` | Search by title, description, or category |
 | `/settings` | Select categories and the free-only preference |
 | `/subscribe` | Enable or disable daily recommendations |
@@ -44,6 +48,7 @@ The persistent Telegram keyboard provides buttons for the main search and settin
 - Venture Capital
 - Product Management
 - Marketing & Sales
+- Hackathons
 
 Classification uses deterministic keyword and phrase matching. AI-based classification is not currently implemented.
 
@@ -53,11 +58,13 @@ Sources are opt-in and must comply with each platform's terms of service.
 
 | Source | Current behavior | Configuration |
 |---|---|---|
+| Luma Berlin | Parses the public Berlin calendar's Schema.org event list without a token | Enabled by default; `ENABLE_LUMA` |
+| Berlin.de trade fairs | Token-free, robots-compliant collection from the public trade-fair calendar, including many Messe listings | Enabled by default; `ENABLE_BERLIN_DE` |
 | Structured event pages | Parses Schema.org `Event` JSON-LD from explicitly permitted URLs | `EVENT_FEED_URLS` |
 | Eventbrite | Imports live events owned by organizations associated with the authenticated account | `EVENTBRITE_TOKEN` |
 | Meetup | Imports events available through the authenticated user's GraphQL `self.events` response | `MEETUP_ACCESS_TOKEN` |
 
-The Eventbrite and Meetup adapters do **not** provide general Berlin-wide public discovery. Without a configured source, the bot runs normally but has no events to display. LinkedIn and arbitrary website scraping are not implemented because access restrictions and terms must be respected.
+Meetup.com disallows automated access to search parameters, feeds, GraphQL, and API paths in `robots.txt`, so BerlinRadar does not scrape Meetup search results. The authenticated Meetup adapter only imports events available to that account. Eventbrite likewise does not provide general Berlin-wide public discovery. Luma and Berlin.de are enabled by default and provides public trade fairs; category filtering keeps only listings relevant to the bot's professional focus. LinkedIn and arbitrary website scraping are not implemented because access restrictions and terms must be respected.
 
 ## Architecture
 
@@ -154,6 +161,8 @@ DEFAULT_CITY=Berlin
 TIMEZONE=Europe/Berlin
 EVENT_UPDATE_INTERVAL_HOURS=6
 NOTIFICATION_HOUR=9
+ENABLE_BERLIN_DE=true
+ENABLE_LUMA=true
 
 # Optional source configuration
 EVENTBRITE_TOKEN=
@@ -187,7 +196,7 @@ Docker Compose loads `.env` and stores SQLite data in the persistent `berlin-rad
 
 ## Processing workflow
 
-1. APScheduler triggers collection at the configured interval.
+1. APScheduler triggers collection at the configured interval. Berlin.de requests identify BerlinRadar and are rate-limited between detail pages.
 2. Enabled collectors retrieve event data.
 3. Events are normalized to the shared model and UTC timestamps.
 4. Keyword classification assigns supported professional categories.
@@ -212,7 +221,7 @@ A notification is marked as sent only after Telegram accepts it. Explicit comman
 
 The following are planned, not current capabilities:
 
-- A verified public Berlin-focused event feed that works without organizer credentials.
+- Additional verified public Berlin-focused feeds that work without organizer credentials.
 - Persistent cross-run deduplication with multiple source links.
 - Pagination, retries, rate-limit handling, and source scan health tracking.
 - Cancellation, postponement, stale-event, and registration-link monitoring.

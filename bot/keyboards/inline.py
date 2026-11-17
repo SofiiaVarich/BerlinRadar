@@ -6,9 +6,13 @@ from database.models import Category, Event, UserPreferences
 
 
 EVENTS_BUTTON = "🔎 Upcoming events"
+TODAY_BUTTON = "☀️ Today"
 WEEK_BUTTON = "📅 This week"
 WEEKEND_BUTTON = "🎉 This weekend"
 FREE_BUTTON = "💚 Free events"
+PAID_BUTTON = "💳 Paid events"
+HACKATHONS_BUTTON = "💻 Hackathons"
+OFFLINE_BUTTON = "🏢 Offline events"
 SEARCH_BUTTON = "🔍 Search"
 SETTINGS_BUTTON = "⚙️ Settings"
 SUBSCRIBE_BUTTON = "🔔 Notifications"
@@ -17,8 +21,10 @@ SUBSCRIBE_BUTTON = "🔔 Notifications"
 def main_menu() -> ReplyKeyboardMarkup:
     return ReplyKeyboardMarkup(
         keyboard=[
-            [KeyboardButton(text=EVENTS_BUTTON), KeyboardButton(text=WEEK_BUTTON)],
-            [KeyboardButton(text=WEEKEND_BUTTON), KeyboardButton(text=FREE_BUTTON)],
+            [KeyboardButton(text=EVENTS_BUTTON), KeyboardButton(text=TODAY_BUTTON)],
+            [KeyboardButton(text=WEEK_BUTTON), KeyboardButton(text=WEEKEND_BUTTON)],
+            [KeyboardButton(text=FREE_BUTTON), KeyboardButton(text=PAID_BUTTON)],
+            [KeyboardButton(text=HACKATHONS_BUTTON), KeyboardButton(text=OFFLINE_BUTTON)],
             [KeyboardButton(text=SEARCH_BUTTON), KeyboardButton(text=SETTINGS_BUTTON)],
             [KeyboardButton(text=SUBSCRIBE_BUTTON)],
         ],

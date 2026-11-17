@@ -17,8 +17,9 @@ async def start(message: Message, repository: Repository) -> None:
         "🚀 <b>Welcome to BerlinRadar!</b>\n\n"
         "Discover Berlin tech, startup, and business events.\n\n"
         "<b>Commands</b>\n"
-        "/events — upcoming events\n/week — this week\n/weekend — this weekend\n"
-        "/free — free events\n/search AI — keyword search\n/settings — preferences\n"
+        "/events — upcoming events\n/today — events today\n/week — this week\n/weekend — this weekend\n"
+        "/free — free events\n/paid — paid events\n/hackathons — hackathons\n"
+        "/offline — in-person events\n/search AI — keyword search\n/settings — preferences\n"
         "/subscribe — toggle daily recommendations\n/help — show this guide",
         reply_markup=main_menu(),
     )

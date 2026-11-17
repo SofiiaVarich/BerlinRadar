@@ -42,6 +42,12 @@ def test_event_rejects_naive_timestamp():
         Event("Tech", datetime.now(), "Berlin", "https://example.com", "test")
 
 
+def test_hackathon_is_classified():
+    hackathon = Event("Berlin AI Hackathon", datetime.now(timezone.utc) + timedelta(days=1),
+                      "Berlin", "https://example.com", "test")
+    assert "Hackathons" in classify(hackathon).categories
+
+
 def test_ai_keyword_does_not_match_inside_word():
     unrelated = Event("Sailing evening", datetime.now(timezone.utc) + timedelta(days=1),
                       "Berlin", "https://example.com", "test")

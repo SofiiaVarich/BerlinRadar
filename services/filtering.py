@@ -15,6 +15,7 @@ KEYWORDS = {
     Category.VENTURE_CAPITAL: ("venture capital", "investment", "fundraising", "vc"),
     Category.PRODUCT: ("product management", "product manager"),
     Category.MARKETING: ("marketing", "sales", "growth"),
+    Category.HACKATHONS: ("hackathon", "hack day", "hack night", "coding challenge"),
 }
 
 
